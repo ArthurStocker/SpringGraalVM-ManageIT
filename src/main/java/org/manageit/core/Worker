@@ -1,0 +1,202 @@
+package org.elixir.core;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+public class Worker {
+
+  private EventLoop _eventloop;
+
+  private final int _pid;
+  private final String _id;
+  private final String _name;
+
+  private final ReentrantLock _runlock = new ReentrantLock();
+
+  private final Map<String, String> _options = new HashMap<String, String>();
+
+  private static AtomicInteger _increment = new AtomicInteger(1);
+
+  private static final Logger logger = LoggerFactory.getLogger(Worker.class);
+
+  public Worker(Map<String, String> args) {
+    logger.info("Initializing Worker");
+    _options.putAll(args);
+    _name =_options.get("name");
+    _id = _options.get("ID");
+    logger.info("Worker initialized");
+
+    _pid = _increment.getAndIncrement();
+  }
+
+  /**
+   * .
+   * 
+   * @return
+   */
+  public String getID() {
+    return _id;
+  }
+
+  /**
+   * .
+   * 
+   * @return
+   */
+  public String getName() {
+    return _name;
+  }
+
+  /**
+   * invoke one of the methods in the context
+   * 
+   * @param arguments request and response, ev. param objects.
+   * @return result as string
+   */
+  public Object invoke(Object... arguments) {
+    Object result = null;
+
+    Worker previous = acquireWorker();
+
+    // TODO: invokeMember of scope and return result
+
+    releaseWorker(previous);
+
+    return result;
+  }
+
+  /**
+   * Count the number of scheduled calls in this worker.
+   * 
+   * @return the number of scheduled calls
+   */
+  public long countScheduledTasks() {
+    EventLoop _eventloop = this._eventloop;
+    return _eventloop == null ? 0 : _eventloop.getQueue().size();
+  }
+
+  /**
+   * Returns true if this worker is currently running.
+   * 
+   * @return true if worker is active
+   */
+  public boolean isActive() {
+    if (_runlock.isLocked()) {
+      return true;
+    }
+    EventLoop _eventloop = this._eventloop;
+    if (_eventloop != null) {
+      Delayed task = (Delayed) _eventloop.getQueue().peek();
+      if (task != null && task.getDelay(TimeUnit.MILLISECONDS) < 1l) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Immediately shut down this worker's event loop.
+   */
+  public synchronized void close() {
+    EventLoop _eventloop = this._eventloop;
+    if (_eventloop != null) {
+      _eventloop.shutdownNow();
+      _eventloop = null;
+    }
+  }
+
+  /**
+   * Release the worker, returning it to the engine's worker pool.
+   */
+  public void closeWorker() {
+    getBroker().closeWorker(this);
+  }
+
+  /**
+   * Schedule a task that will close this worker when the current task is
+   * finished, returning it back into the engine's worker pool.
+   */
+  public void releaseWhenDone() {
+    if (isActive()) {
+      getEventLoop().submit(new Runnable() {
+        public void run() {
+          closeWorker();
+        }
+      });
+    } else {
+      closeWorker();
+    }
+  }
+
+  /**
+   * Associate this worker with the current thread, making sure no other thread
+   * currently owns this worker. Returns the worker previously associated with
+   * this thread, if any.
+   * 
+   * @return the worker previously associated with this thread, or null
+   */
+  private Worker acquireWorker() {
+    _runlock.lock();
+    return getBroker().setCurrentWorker(this);
+  }
+
+  /**
+   * Release this worker from the current thread, and set the worker associated
+   * with the current thread to the previous worker.
+   * 
+   * @param previous the worker previously associated with this thread
+   */
+  private void releaseWorker(Worker previous) {
+    getBroker().setCurrentWorker(previous);
+    _runlock.unlock();
+  }
+
+  /**
+   * Returns a string representation of the worker.
+   */
+  public String toString() {
+    return "worker-" + _pid + " (" + _name + ")";
+  }
+
+  // init the worker's event loop
+  private synchronized EventLoop getEventLoop() {
+    if (_eventloop == null) {
+      _eventloop = new EventLoop(_pid, _name);
+    }
+    return _eventloop;
+  }
+
+  static class EventLoop extends ScheduledThreadPoolExecutor {
+    EventLoop(final int _pid, final String _name) {
+      super(1, new ThreadFactory() {
+        public Thread newThread(Runnable runnable) {
+          Thread thread = new Thread(runnable, "worker-" + _pid + " (" + _name + ")");
+          thread.setDaemon(true);
+          return thread;
+        }
+      });
+      // Allow event loop threads to time out, allowing workers to
+      // be garbage collected. If a worker is still used after its thread
+      // timed out a new thread will be created.
+      setKeepAliveTime(60000, TimeUnit.MILLISECONDS);
+      allowCoreThreadTimeOut(true);
+    }
+  }
+}

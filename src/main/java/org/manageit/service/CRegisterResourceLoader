@@ -1,0 +1,59 @@
+package org.manageit.service;
+
+import org.manageit.resource.CBaseResourceLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.stereotype.Component;
+
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+@Component("RegisterResourceLoader")
+public class CRegisterResourceLoader implements BeanFactoryPostProcessor, ResourceLoaderAware, ApplicationContextAware {
+  
+  private ApplicationContext _applicationContext;
+  private ConfigurableListableBeanFactory _beanFactory;
+
+  private static final Logger logger = LoggerFactory.getLogger(CRegisterResourceLoader.class);
+
+  @Override
+  public void postProcessBeanFactory(ConfigurableListableBeanFactory __beanFactory) {
+    logger.trace("[RegisterResourceLoader - postProcessBeanFactory] ConfigurableListableBeanFactory "+__beanFactory);
+    _beanFactory = __beanFactory;
+  }
+
+  @Override
+  public void setResourceLoader(ResourceLoader __resourceLoader) {
+    logger.trace("[RegisterResourceLoader - setResourceLoader] Set ResourceLoader "+__resourceLoader);
+    if (AnnotationConfigServletWebServerApplicationContext.class.isAssignableFrom(__resourceLoader.getClass())){
+      _applicationContext = ((ApplicationContext) __resourceLoader);
+      logger.trace("[RegisterResourceLoader - setResourceLoader] ApplicationContext "+_applicationContext);
+    }
+
+    if (DefaultResourceLoader.class.isAssignableFrom(__resourceLoader.getClass())) {
+      ((DefaultResourceLoader) __resourceLoader).addProtocolResolver(new CBaseResourceLoader(_applicationContext, _beanFactory));
+		}
+		else {
+			logger.warn("The provided delegate resource loader is not an implementation of DefaultResourceLoader. Custom Protocol prefix will not be enabled.");
+		}
+  }
+
+  @Override
+  public void setApplicationContext(ApplicationContext __applicationContext) {
+    logger.trace("[RegisterResourceLoader - setApplicationContext] ApplicationContext "+__applicationContext);
+    _applicationContext = __applicationContext;
+  }
+}

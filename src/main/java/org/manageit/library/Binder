@@ -1,0 +1,99 @@
+package org.elixir.library.type;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+import org.graalvm.polyglot.Source;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+
+public class Script {
+
+  private  String _id;
+  private  String _name;
+  private  String _domain;
+  private  String _reference;
+
+
+  private Long _version = 0L;
+  private Source _source = null;
+  
+
+  private static final Logger logger = LoggerFactory.getLogger(Script.class);
+
+  public Script() {
+    logger.info("Script initialized");
+  }
+
+  public void setID(String id) {
+    _id = id;
+  }
+
+  public String getID() {
+    return _id;
+  }
+
+  public void setName(String name) {
+    _name = name;
+  }
+
+  public String getName() {
+    return _name;
+  }
+
+  public void setDomain(String domain) {
+    _domain = domain;
+  }
+
+  public String getDomain() {
+    return _domain;
+  }
+
+  public void setReference(String reference) {
+    _reference = reference;
+  }
+
+  public String getReference() {
+    return _reference;
+  }
+
+  public Long getVersion() {
+    return _version;
+  }
+
+  public Source getSource() {
+    load();
+    return _source;
+  }
+
+  public String getLanguage() {
+    return getExtensions.get(_reference.split("\\.")[1]);
+  }
+
+  private void load() {
+    Resource script = resourceLoader.getResource(_reference);
+
+    try {
+      Long lastModified = script.lastModified();
+
+      if (!_version.equals(lastModified)) {
+        _version = lastModified;
+        logger.debug("[Script.load] " + _name + " actual version " + _version + " last modified " + lastModified);
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("language", getLanguage());
+        args.put("url", script.getURL());
+        _source = executeGraalSourceFactory.apply(args);
+        //Source.newBuilder(getLanguage(), script.getURL()).build();
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      logger.error("Auto-generated catch block", e);
+      //e.printStackTrace();
+    }
+  }
+}

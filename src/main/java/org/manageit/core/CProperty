@@ -1,0 +1,304 @@
+package org.manageit.core;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Function;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.manageit.config.Core;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.WritableResource;
+
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ *  
+ */
+public class CProperty extends AElement implements IProperty {
+
+  @Autowired
+  protected Core core;
+
+  @Autowired
+  protected ResourceLoader resourceLoader;
+
+  @Autowired
+  protected Function<String, CPropertyDescriptor> getDescriptorByName;
+
+
+  protected Object _temp_value = null;
+  protected Object _elixir_value = null;
+
+  protected Long _version = 0L;
+  protected Resource _resource = null;
+
+  protected Map<String, String> _attributes = new HashMap<String, String>();
+
+  private static final Logger logger = LoggerFactory.getLogger(CProperty.class);
+
+  /**
+   * 
+   * 
+   * 
+   */
+  public CProperty() {
+    logger.info("Initializing CoreProperty");
+  }
+
+  @Override
+  public void setId(UUID __elixir_id) {
+    if (super.getId() == null) {
+      super.setId(__elixir_id);
+      setEntry(_temp_value);
+    }
+  }
+
+  @Override
+  public UUID getId() {
+    return super.getId();
+  }
+
+  @Override
+  public void setName(String __elixir_name) {
+    if (super.getName().equals("")) {
+      super.setName(__elixir_name);
+      setEntry(_temp_value);
+    } 
+  }
+
+  @Override
+  public String getName() {
+    return super.getName();
+  }
+  
+  @Override
+  public void setType(String __elixir_type) {
+    super.setType(__elixir_type);
+    setEntry(_temp_value);
+  }
+
+  @Override
+  public String getType() {
+    return super.getType();
+  }
+
+  @Override
+  public void setLabel(String __elixir_label) {
+    super.setLabel(__elixir_label);
+  }
+
+  @Override
+  public String getLabel() {
+    return super.getLabel();
+  }
+
+  @Override
+  public void setValue(Object __value) {
+    _temp_value = __value;
+    setEntry(_temp_value);
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> T getValue() {
+    getEntry();
+    return (T)_elixir_value;
+  }
+
+  @Override
+  public void setAttributes(Map<String, String> attributes) {
+    _attributes = attributes;
+  }
+
+  @Override
+  public Map<String, String> getAttributes() {
+    return _attributes;
+  }
+
+  @Override
+  public Long version() {
+    return _version;
+  }
+
+  /**
+   * The Value as Object to be returned
+   * 
+   * @param object core_object as Object
+   */
+  protected void setEntry(Object value) {
+    logger.debug("setEntry");
+    if (super.getId() != null && !super.getName().equals("") && !super.getType().equals("") && _temp_value != null) {
+
+      _temp_value = null;
+
+      try {
+
+        logger.debug("TYPE: "+super.getType());
+
+
+        try {
+          logger.info(getDescriptorByName.toString());
+        } catch (Exception e) {
+          //TODO: handle exception
+          logger.error("Auto-generated catch block", e);
+        }
+
+
+        CPropertyDescriptor descriptor = getDescriptorByName.apply(super.getType());
+        Class<?> _elixir_class = descriptor.getNative();
+
+        Method[] methods = _elixir_class.getMethods();
+        for (Method _method : methods) {
+          logger.debug("    Method name        = " + _method.getName());
+    
+          Class<?>[] paramTypes = _method.getParameterTypes();
+          for (Class<?> c : paramTypes) {
+          logger.debug("        Parameter type = " + c.getName());
+          }
+
+          logger.debug("      Return type      = " + _method.getReturnType().getName()); 
+        }
+
+        if (!_elixir_value.equals(value)) {
+          Method method = _elixir_class.getMethod("valueOf", String.class);
+          _elixir_value = method.invoke(null, value.toString());
+          logger.info("ElixirProperty loaded (" + getId().toString() + ") value: ''" + _elixir_value.toString() + "'");
+        }
+      
+      } catch (NoSuchMethodException e) {
+        // TODO Auto-generated catch block
+        logger.error("Auto-generated catch block", e);
+        //e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        // TODO Auto-generated catch block
+        logger.error("Auto-generated catch block", e);
+        //e.printStackTrace();
+      } catch (InvocationTargetException e) {
+        // TODO Auto-generated catch block
+        logger.error("Auto-generated catch block", e);
+        //e.printStackTrace();
+      }
+
+      write(_elixir_value.toString().getBytes());
+    }
+  }
+
+  /**
+   * The core_oject as ElixirProperty to be returned
+   * 
+   * @return core_oject as ElixirProperty
+   */
+  protected void getEntry() {
+
+    String value = new String(read());
+
+    try {
+
+      CPropertyDescriptor descriptor = getDescriptorByName.apply(super.getName());
+      Class<?> _elixir_class = descriptor.getNative();
+
+      Method[] methods = _elixir_class.getMethods();
+      for (Method _method : methods) {
+        logger.debug("    Method name        = " + _method.getName());
+  
+        Class<?>[] paramTypes = _method.getParameterTypes();
+        for (Class<?> c : paramTypes) {
+        logger.debug("        Parameter type = " + c.getName());
+        }
+
+        logger.debug("      Return type      = " + _method.getReturnType().getName()); 
+      }
+
+      if (!_elixir_value.equals(value)) {
+        Method method = _elixir_class.getMethod("valueOf", String.class);
+        _elixir_value = method.invoke(null, value.toString());
+        logger.info("ElixirProperty loaded (" + getId().toString() + ") value: ''" + _elixir_value.toString() + "'");
+      }
+    
+    } catch (NoSuchMethodException e) {
+      // TODO Auto-generated catch block
+      logger.error("Auto-generated catch block", e);
+      //e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      // TODO Auto-generated catch block
+      logger.error("Auto-generated catch block", e);
+      //e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      // TODO Auto-generated catch block
+      logger.error("Auto-generated catch block", e);
+      //e.printStackTrace();
+    }
+    
+  }
+
+ /**
+  * Write bytes to resource
+  * 
+  * @param bytes as byte[]
+  */
+  protected void write(byte[] bytes) {
+    if (_attributes.get("reference") != null) {
+      read();
+      WritableResource writableResource = (WritableResource) _resource;
+
+      try (OutputStream outputStream = writableResource.getOutputStream()) {
+        logger.debug("[ElixirProperty.write] " + _attributes.get("reference"));
+        outputStream.write(bytes);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        logger.error("Auto-generated catch block", e);
+        //e.printStackTrace();
+      }
+    } else {
+      logger.debug("[ElixirProperty.write] to ByteArrayResource in memory");
+      ByteArrayResource resource = new ByteArrayResource(bytes, "cache data as bytearray");
+      _resource = resource;
+    }
+  }
+
+  /**
+   * Read bytes from resource
+   * 
+   * @return byte[]
+   */
+  protected byte[] read() {
+    byte[] value = null;
+
+    if (_attributes.get("reference") != null) {
+      Resource resource = resourceLoader.getResource(_attributes.get("reference"));
+
+      try {
+        Long lastModified = resource.lastModified();
+
+        if (!_version.equals(lastModified)) {
+          _version = lastModified;
+          _resource = resource;
+          _resource.getInputStream().read(value);
+          logger.debug("[ElixirProperty.read] " + _attributes.get("reference") + " actual version " + _version + " last modified " + lastModified);
+        }
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        logger.error("Auto-generated catch block", e);
+        //e.printStackTrace();
+      }
+    }
+
+    return value;
+  }
+
+  public String toString() {
+    return _elixir_value.toString();
+  }
+}

@@ -1,0 +1,169 @@
+package org.manageit.resource;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+
+import org.manageit.repository.IBaseConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.io.ProtocolResolver;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.StringUtils;
+
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+public class CBaseResourceLoader implements ProtocolResolver, ResourceLoader {
+
+  private String PROTOCOL;
+  private String CLASSNAME;
+
+  private final Environment _environment;
+  private final ApplicationContext _applicationContext;
+  private final ConfigurableListableBeanFactory _configurableListableBeanFactory;
+
+  private static final Logger logger = LoggerFactory.getLogger(CBaseResourceLoader.class);
+
+  public CBaseResourceLoader(ApplicationContext __applicationContext, ConfigurableListableBeanFactory __configurableListableBeanFactory) {
+    logger.info("Initializing BaseResourceLoader");
+    _configurableListableBeanFactory = __configurableListableBeanFactory;
+    logger.trace("[BaseResourceLoader - init] ConfigurableListableBeanFactory "+_configurableListableBeanFactory);
+    _applicationContext = __applicationContext;
+    logger.trace("[BaseResourceLoader - init] ApplicationContext "+_applicationContext);
+    _environment = _applicationContext.getEnvironment();
+    logger.trace("[BaseResourceLoader - init] Environment "+_environment);
+
+    CLASSNAME = _environment.getProperty("database.connector.class");
+    logger.debug("[BaseResourceLoader - init] ClassName "+CLASSNAME);
+    PROTOCOL = _environment.getProperty("database.protocol");
+    logger.debug("[BaseResourceLoader - init] PROTOCOL "+PROTOCOL);
+  }
+
+  @Override
+  public Resource getResource(String location) {
+    IBaseConnector baseConnector = null;
+
+    try {
+      logger.debug("[BaseResourceLoader - getResource] Use ClassName "+CLASSNAME);
+      baseConnector = (IBaseConnector) _applicationContext.getBean(Class.forName(CLASSNAME));
+    } catch (ClassNotFoundException e) {
+      logger.error("BaseConnector Class not found: "+CLASSNAME+" "+e.getMessage());
+      logger.trace("Trace \n", e);
+    } catch (BeansException e) {
+      logger.error("BaseConnector Bean not found: "+CLASSNAME+" "+e.getMessage());
+      logger.trace("Trace \n", e);
+    }
+
+    logger.debug("[BaseResourceLoader - getResource] BaseConnector "+baseConnector);
+
+    String resourceName = StringUtils.delete(location, PROTOCOL);
+    
+    return baseConnector.getResource(resourceName);
+  }
+
+  @Override
+	public Resource resolve(String location, ResourceLoader resourceLoader) {
+    logger.debug("[BaseResourceLoader - resolve] Resource Location "+location);
+    logger.debug("[BaseResourceLoader - resolve] Used ResourceLoader "+resourceLoader);
+
+    Resource resource;
+    
+    if(location.startsWith(PROTOCOL)){
+      logger.debug("[BaseResourceLoader - resolve] Use PROTOCOL "+PROTOCOL);
+      resource = getResource(location);
+      if(resource.exists()){
+        return resource;
+      }
+    }
+
+    // if (location.startsWith(ResourceLoader.CLASSPATH_URL_PREFIX)){
+    //   logger.debug("[BaseResourceLoader - resolve] Use PROTOCOL - "+ResourceLoader.CLASSPATH_URL_PREFIX);
+    //   resource = resourceLoader.getResource(location);
+    //   if(resource.exists()){
+    //     return resource;
+    //   }
+    // }
+  
+    return new Resource(){
+    
+      @Override
+      public InputStream getInputStream() throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    
+      @Override
+      public long lastModified() throws IOException {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+    
+      @Override
+      public URL getURL() throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    
+      @Override
+      public URI getURI() throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    
+      @Override
+      public String getFilename() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    
+      @Override
+      public File getFile() throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    
+      @Override
+      public String getDescription() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    
+      @Override
+      public boolean exists() {
+        // TODO Auto-generated method stub
+        return false;
+      }
+    
+      @Override
+      public Resource createRelative(String relativePath) throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    
+      @Override
+      public long contentLength() throws IOException {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+    };
+	}
+
+  @Override
+  public ClassLoader getClassLoader() {
+    return _applicationContext.getClassLoader();
+  }
+}

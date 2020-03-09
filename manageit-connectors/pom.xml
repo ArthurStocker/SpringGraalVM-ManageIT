@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<name>ManageIT</name>
-	<artifactId>manageit</artifactId>
+	<name>ManageIT Database Connectors</name>
+	<artifactId>manageit-connectors</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<description>PoC Spring Boot and GraalVM - ManageIT</description>
+	<description>PoC Spring Boot and GraalVM - ManageIT Database Connectors / BaseX</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -15,34 +15,11 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
-	<repositories>
-		<repository>
-			<id>org-basex</id>
-			<name>Basex Repository</name>
-			<url>http://files.basex.org/maven/</url>
-		</repository>
-	</repositories>
-
-	<modules>
-		<module>docs</module>
-		<module>manageit-connectors</module>
-	</modules>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>11</java.version>
 	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>manageit-connectors</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -67,12 +44,6 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>5.2.3.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.basex</groupId>
-			<artifactId>basex</artifactId>
-			<version>9.3.1</version>
 		</dependency>
 	</dependencies>
 

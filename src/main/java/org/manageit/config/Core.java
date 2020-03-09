@@ -2,6 +2,7 @@ package org.manageit.config;
 
 import java.net.URL;
 import java.util.Map;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Function;
 
@@ -10,16 +11,16 @@ import org.slf4j.LoggerFactory;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.Source;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 
@@ -30,11 +31,13 @@ import org.springframework.stereotype.Component;
  * 
  */
 @Configuration
-@PropertySource("${manageit.config.location}")
+@ComponentScan("org.manageit.core.*")
+// @PropertySource("${manageit.config.location}")
 @ConfigurationProperties(prefix = "core")
+@EnableAutoConfiguration
 public class Core {
 
-  //private Map<String, String> _basexparameters = new HashMap<String, String>();
+  // private Map<String, String> _basexparameters = new HashMap<String, String>();
 
   private Map<String, Map<String, String>> _extensions = new HashMap<String, Map<String, String>>();
 
@@ -52,54 +55,16 @@ public class Core {
     logger.info("Initializing Core");
   }
 
-  @Bean
-  @Scope("singleton")
-  public String about() {
-    String about = "[" + "/" + " (" + ") ]";
-    return about;
-  }
-
-  //@Autowired
-  //public void test(ConfigurableEnvironment env) {
-    //PropertiesConfiguration pc = new PropertiesConfiguration(); // apache commons-configuration
-  //}
-
-  /*
-   * Properties .... public void setDescriptor(List<CPropertyDescriptor>
-   * __descriptors) { _descriptors = __descriptors; } public
-   * List<CPropertyDescriptor> getDescriptor() { return _descriptors; }
-   * 
-   * @Bean public Function<String, CPropertyDescriptor> getDescriptorByName() {
-   * return arg -> findDescriptor(arg); }
-   * 
-   * @Bean
-   * 
-   * @Scope("prototype") public CPropertyDescriptor findDescriptor(String arg) {
-   * logger.info("DESCRIPTOR TYPE: "+arg); CPropertyDescriptor descriptor = null;
-   * if (arg != null) { Iterator<CPropertyDescriptor> __descriptors_ =
-   * _descriptors.iterator();
-   * 
-   * while (__descriptors_.hasNext()) { CPropertyDescriptor _descriptor =
-   * __descriptors_.next(); logger.info("DESCRIPTOR: "+_descriptor.getName()); if
-   * (_descriptor.getName().equals(arg)) { descriptor = _descriptor; } } } return
-   * descriptor; }
-   * 
-   * 
-   * 
-   * public void setProperty(List<CProperty> __properties) { _properties =
-   * __properties; } public List<CProperty> getProperty() { return _properties; }
-   */
-
   /**
    * .
    * 
    * @param extensions
    */
   public void setExtensions(Map<String, Map<String, String>> __extensions) {
-    logger.debug("Set File Extension parameters to "+__extensions);
+    logger.debug("Set File Extension parameters to " + __extensions);
     _extensions.putAll(__extensions);
   }
-  
+
   /**
    * .
    * 
@@ -114,25 +79,6 @@ public class Core {
    * 
    * @param options
    */
-  //public void setBaseXParameters(Map<String, String> __options) {
-  //  logger.debug("Set BaseX Session parameters to "+__options);
-  //  _basexparameters.putAll(__options);
-  //}
-
-  /**
-   * .
-   *
-   * @return 
-   */
-  //public Map<String, String> getBaseXParameters() {
-  //  return _basexparameters;
-  //}
-
-  /**
-   * .
-   * 
-   * @param options
-   */
   public void setEngineParameters(Map<String, Map<String, String>> __options) {
     _enginedefaults.putAll(__options);
   }
@@ -140,7 +86,7 @@ public class Core {
   /**
    * .
    *
-   * @return 
+   * @return
    */
   public Map<String, Map<String, String>> getEngineParameters() {
     return _enginedefaults;
@@ -256,5 +202,25 @@ public class Core {
       }
     }
     return source;
+  }
+
+  /**
+   * .
+   * 
+   * @return
+   */
+  @Bean
+  public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+    return args -> {
+
+      System.out.println("Let's inspect the beans provided by Spring Boot:");
+
+      String[] beanNames = ctx.getBeanDefinitionNames();
+      Arrays.sort(beanNames);
+      for (String beanName : beanNames) {
+        logger.info(beanName);
+      }
+
+    };
   }
 }

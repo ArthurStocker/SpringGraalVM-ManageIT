@@ -33,8 +33,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
-//import org.springframework.beans.factory.annotation.Autowire;
-
 /**
  * Spring Boot BaseX connector class.
  *
@@ -57,11 +55,12 @@ public class CConnector implements ResourceLoader {
   /**
    * Build BaseX Query {@link org.basex.api.client.ClientSession}.
    * 
-   * @param resourceURI - URI to the resource including: host, port, user and password, or {@code null}
+   * @param resourceURI  - URI to the resource including: host, port, user and
+   *                     password, or {@code null}
    * @param basexSession - ClientSession to be used, or {@code null}
    * 
-   * @return a {@code ClientQuery} if it's built without errors,
-   *         or {@code null} otherwise
+   * @return a {@code ClientQuery} if it's built without errors, or {@code null}
+   *         otherwise
    */
   private ClientQuery buildQuery(URI __resourceURI, ClientSession __basexSession) {
     logger.debug("[Connector - buildQuery] Build BaseX Query");
@@ -86,10 +85,11 @@ public class CConnector implements ResourceLoader {
    * Get a BaseX ClientSession, which maight be used in a Scope
    * {@link org.basex.api.client.ClientSession}.
    * 
-   * @param resourceURI - URI to the resource including: host, port, user and password, or {@code null}
+   * @param resourceURI - URI to the resource including: host, port, user and
+   *                    password, or {@code null}
    * 
-   * @return a {@code ClientSession} if it's connected without errors,
-   *         or {@code null} otherwise
+   * @return a {@code ClientSession} if it's connected without errors, or
+   *         {@code null} otherwise
    */
   private ClientSession getSession(URI __resourceURI) {
     logger.debug("[Connector - getSession] Get BaseX Session");
@@ -117,10 +117,11 @@ public class CConnector implements ResourceLoader {
   /**
    * Get a resource from the database, which maight be used in a Scope
    * 
-   * @param resourceString - String to the resource including: host, port, user and password, or {@code null}
+   * @param resourceString - String to the resource including: host, port, user
+   *                       and password, or {@code null}
    * 
-   * @return a {@code Resource} if it's exising and queried without errors,
-   *         or {@code ByteArrayResource} with default properties otherwise
+   * @return a {@code Resource} if it's exising and queried without errors, or
+   *         {@code ByteArrayResource} with default properties otherwise
    */
   public Resource getResource(String __resourceString) {
     logger.debug("[Connector - getResource] Get Basex Resource");
@@ -129,8 +130,8 @@ public class CConnector implements ResourceLoader {
     try {
       __resourceURI = new URI(__resourceString);
     } catch (URISyntaxException __e) {
-      logger.error("Connector resource string is not valid, cannot convert resource string to URI: "
-          + __e.getMessage());
+      logger
+          .error("Connector resource string is not valid, cannot convert resource string to URI: " + __e.getMessage());
       logger.trace("Trace \n", __e);
     }
 
@@ -160,7 +161,8 @@ public class CConnector implements ResourceLoader {
       return new ByteArrayResource(__byteArray);
     }
 
-    String __propertiesString = "" + "manageit.properties.loaded=false\n" + "manageit.properties.connector=BaseXConnector\n" + "";
+    String __propertiesString = "" + "manageit.properties.loaded=false\n"
+        + "manageit.properties.connector=BaseXConnector\n" + "";
     return new ByteArrayResource(__propertiesString.getBytes());
   }
 

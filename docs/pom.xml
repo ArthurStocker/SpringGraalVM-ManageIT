@@ -3,17 +3,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>ManageIT Documentation</name>
-    <artifactId>docs</artifactId>
+    <groupId>org.manageit.docs</groupId>
+    <artifactId>manageit-docs</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>PoC Spring Boot and GraalVM - ManageIT Documentation</description>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
+        <groupId>org.manageit</groupId>
         <artifactId>manageit</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <!-- <relativePath /> -->
-        <!-- lookup parent from repository -->
+        <relativePath>../</relativePath>
     </parent>
 
     <properties>

@@ -3,17 +3,26 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<name>ManageIT Database Connectors</name>
+	<groupId>org.manageit.connectors</groupId>
 	<artifactId>manageit-connectors</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>PoC Spring Boot and GraalVM - ManageIT Database Connectors / BaseX</description>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.5.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<groupId>org.manageit</groupId>
+		<artifactId>manageit</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../</relativePath>
 	</parent>
+
+	<repositories>
+		<repository>
+			<id>org-basex</id>
+			<name>Basex Repository</name>
+			<url>http://files.basex.org/maven/</url>
+		</repository>
+	</repositories>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,6 +54,12 @@
 			<artifactId>spring-core</artifactId>
 			<version>5.2.3.RELEASE</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.basex</groupId>
+			<artifactId>basex</artifactId>
+			<version>9.3.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -55,6 +70,7 @@
 				<configuration>
 					<archive>
 						<manifest>
+							<addClasspath>true</addClasspath>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
 					</archive>

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<name>ManageIT</name>
-	<groupId>org.manageit</groupId>
+	<groupId>org.manageitframework</groupId>
 	<artifactId>manageit</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -30,8 +30,8 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.manageit.connectors</groupId>
-				<artifactId>manageit-connectors</artifactId>
+				<groupId>org.manageit</groupId>
+				<artifactId>connectors</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

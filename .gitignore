@@ -1,5 +1,10 @@
 ### Maven ###
 !.mvn/wrapper/maven-wrapper.jar
 
-### Java Classes ###
+### Java ###
 /target/
+/site/
+.classpath
+.project
+.settings
+.factorypath

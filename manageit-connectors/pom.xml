@@ -3,17 +3,17 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<name>ManageIT Database Connectors</name>
-	<groupId>org.manageit.connectors</groupId>
+	<groupId>org.manageitframework</groupId>
 	<artifactId>manageit-connectors</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>PoC Spring Boot and GraalVM - ManageIT Database Connectors / BaseX</description>
 
 	<parent>
-		<groupId>org.manageit</groupId>
+		<groupId>org.manageitframework</groupId>
 		<artifactId>manageit</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../</relativePath>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<repositories>

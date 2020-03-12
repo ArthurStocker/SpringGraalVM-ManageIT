@@ -1,0 +1,31 @@
+{
+    // Verwendet IntelliSense zum Ermitteln möglicher Attribute.
+    // Zeigen Sie auf vorhandene Attribute, um die zugehörigen Beschreibungen anzuzeigen.
+    // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [{
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Main<manageit>",
+            "request": "launch",
+            "mainClass": "org.manageit.application.Main",
+            "projectName": "mf-platform"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Main<manageit> [PoC Spring Boot and GraalVM]",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/manageit/mf-platform",
+            "args": "",
+            "console": "internalConsole",
+            "mainClass": "org.manageit.application.Main",
+            "stopOnEntry": false,
+            "projectName": "mf-platform"
+        }
+    ]
+}

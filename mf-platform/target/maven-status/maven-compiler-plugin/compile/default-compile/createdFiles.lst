@@ -1,0 +1,12 @@
+org/manageit/webinterface/controller/Broker.class
+org/manageit/config/Restclient.class
+org/manageit/config/Import.class
+org/manageit/config/Event.class
+org/manageit/application/Main.class
+org/manageit/config/Wssinterface.class
+org/manageit/config/Export.class
+org/manageit/config/Restapi.class
+org/manageit/config/Core.class
+org/manageit/core/CProtocolResolver.class
+org/manageit/config/Webinterface.class
+org/manageit/application/ApplicationInitializer.class

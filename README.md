@@ -1,12 +1,12 @@
-# SpringGraalVM-ManageIT
+# ManageIT Platform
 
-SpringBoot Server with GraalVM Engine integrated (ManageIT-Platform-POC)
+SpringBoot Server with GraalVM Engine integrated (ManageIT-Platform-PoC)
 
 ~~~text
-Readme for SpringGraalVM-ManageIT Application  
+Readme for ManageIT Platform Application  
   
 
-Created by Arthur Stocker, 01.01.20.  
+Created by Arthur Stocker, 01.01.2020  
 Copyright (c) 2020 Arthur Stocker. All rights reserved.  
 ~~~
 
@@ -18,7 +18,7 @@ Copyright (c) 2020 Arthur Stocker. All rights reserved.
 
 [1    Installation](#1-installation)  
 [1.1  Dependencies](#11-dependency)  
-[1.2  GraalVM Community Edidtion configuration](#12-java-configuration)  
+[1.2  GraalVM Community Edition configuration](#12-java-configuration)  
 [1.3  SpringBoot configuration](#13-ringojs-configuration)  
 [1.4  BaseX configuration](#14-basex-configuration)  
 [2    Java Compile source and create JAR package](#2-java-compile-source-and-create-jar-package)  
@@ -37,9 +37,9 @@ Copyright (c) 2020 Arthur Stocker. All rights reserved.
 
 ### 1.1 Dependency  
 
-#### § 1 GraalVM Community Edidtion  
+#### § 1 GraalVM Community Edition  
 
-First we need to install GraalVM Community Edidtion. As of the time when I installed GraalVM Community Edidtion, I decided to install the newest one.  
+First we need to install GraalVM Community Edition. As of the time when I installed GraalVM Community Edition, I decided to install the newest one.  
 
 #### § 2 SpringBoot  
 
@@ -58,7 +58,7 @@ GUI stores thier data.
 
 > /Users/.../Library/Application Support/BaseX/Repo
 
-### 1.2  GraalVM Community Edidtion configuration  
+### 1.2  GraalVM Community Edition configuration  
 
 ....... TODO ......  
 
@@ -71,6 +71,8 @@ GUI stores thier data.
 ....... TODO ......  
 
 ### 2 JAVA Compile source and create JAR package  
+
+....... NEEDED ? it's maven ......  
 
 Compile JAVA source:  
 

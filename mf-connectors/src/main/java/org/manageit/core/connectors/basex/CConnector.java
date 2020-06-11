@@ -48,7 +48,7 @@ public class CConnector implements ResourceLoader {
   private static final Logger logger = LoggerFactory.getLogger(CConnector.class);
 
   public CConnector() {
-    logger.info("Initializing BaseX Connector .. . ");
+    logger.info("Initializing BaseX Connector");
 
     _started = ", started on " + (new Date());
   }
@@ -163,7 +163,7 @@ public class CConnector implements ResourceLoader {
     }
 
     String __propertiesString = "" + "manageit.properties.loaded=false\n"
-        + "manageit.properties.connector=BaseXConnector\n" + "";
+        + "manageit.properties.datasource=BaseXConnector\n" + "";
     return new ByteArrayResource(__propertiesString.getBytes());
   }
 

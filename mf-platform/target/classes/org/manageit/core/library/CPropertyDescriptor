@@ -1,0 +1,100 @@
+package org.manageit.core;
+
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ *  
+ */
+public class CPropertyDescriptor extends AElement implements IPropertyDescriptor {
+
+  private Class<?> _elixir_class = null;
+
+  private static final Logger logger = LoggerFactory.getLogger(CPropertyDescriptor.class);
+
+  /**
+   * 
+   * 
+   * 
+   */
+  public CPropertyDescriptor() {
+    logger.info("Initializing CorePropertyDescriptor");
+  }
+
+  @Override
+  public void setId(UUID __elixir_id) {
+    if (super.getId() == null) {
+      super.setId(__elixir_id);
+      createJavaclass();
+    } 
+  }
+
+  @Override
+  public UUID getId() {
+    return super.getId();
+  }
+
+  @Override
+  public void setName(String __elixir_name) {
+    if (super.getName().equals("")) {
+      super.setName(__elixir_name);
+      createJavaclass();
+    }
+  }
+
+  @Override
+  public String getName() {
+    return super.getName();
+  }
+  
+  @Override
+  public void setType(String __elixir_type) {
+    if (super.getType().equals("")) {
+      super.setType(__elixir_type);
+      createJavaclass();
+    }
+  }
+
+  @Override
+  public String getType() {
+    return super.getType();
+  }
+
+  @Override
+  public void setNative(Class<?> __java_class) {
+    if (super.getId() != null && !super.getName().equals("") && super.getType().equals("") && _elixir_class == null) {
+      _elixir_class = __java_class;
+      logger.info("CorePropertyDescriptor initialized as (" + super.getId().toString() + ") (" + super.getName() + ") (" + _elixir_class.getName() + ")");
+    }
+  }
+
+  @Override
+  public Class<?> getNative() {
+    return _elixir_class;
+  }
+
+  /**
+   * Create the object based on the Type set
+   * in this Descriptor.
+   * 
+   */
+  protected void createJavaclass() {
+    if (super.getId() != null && !super.getName().equals("") && !super.getType().equals("") && _elixir_class == null) {
+      try {
+        _elixir_class = Class.forName(super.getType());
+        logger.info("CorePropertyDescriptor initialized as (" + super.getId().toString() + ") (" + super.getName() + ") (" + _elixir_class.getName() + ")");
+      } catch (ClassNotFoundException e) {
+        // TODO Auto-generated catch block
+        logger.error("Auto-generated catch block", e);
+        //e.printStackTrace();
+      }
+    }
+  }
+}

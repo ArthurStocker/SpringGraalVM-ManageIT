@@ -1,0 +1,200 @@
+package org.manageit.core;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import org.elixir.library.type.Script;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Source;
+import org.graalvm.polyglot.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+public class Scope {
+
+  @Autowired
+  private Function<Map<String, String>, Context> executeGraalContextFactory;
+
+  private String _id;
+  private String _name;
+
+  private Boolean _isOpen = false;
+  private Context _context = null;
+
+  private Source _cache = null;
+  private Source _helper = null;
+
+  private List<Script> _scripts = new ArrayList<Script>();
+
+  private Map<String, String> _options = new HashMap<String, String>();
+
+  private final Map<String, Value> _members = new HashMap<String, Value>();
+
+  private static final Logger logger = LoggerFactory.getLogger(Scope.class);
+
+  /**
+   * .
+   * 
+   * 
+   */
+  public Scope(Map<String, String> args) {
+    logger.info("Initializing Scope");
+    _options.putAll(args);
+  }
+
+  /**
+   * Returns a string representation of the module.
+   */
+  public String toString() {
+    return "module-" + _name + " (" + _id + ")";
+  }
+
+  /**
+   * .
+   * 
+   *
+   */
+  public void setID(String id) {
+    _id = id;
+  }
+
+  /**
+   * .
+   * 
+   * @return
+   */
+  public String getID() {
+    return _id;
+  }
+
+  /**
+   * .
+   * 
+   *
+   */
+  public void setName(String name) {
+    _name = name;
+  }
+
+  /**
+   * .
+   * 
+   * @return
+   */
+  public String getName() {
+    return _name;
+  }
+
+  /**
+   * open a domian.
+   * 
+   */
+  public void open() {
+    if (!_isOpen) {
+      _isOpen = true;
+    }
+    // return null;
+  }
+
+  /**
+   * check if domain is open.
+   * 
+   */
+  public Boolean isOpen() {
+    return _isOpen;
+  }
+
+  /**
+   * release the domain
+   * 
+   */
+  public void close() {
+    _isOpen = false;
+  }
+
+  /**
+   * .
+   * 
+   * @return
+   */
+  public List<String> getMembers() {
+    List<String> members = new ArrayList<String>();
+
+    _members.forEach((k, v) -> {
+      members.add(k);
+    });
+
+    return members;
+  }
+
+  /**
+   * Invoke a member of the Graal Context associated with this domain.
+   * 
+   * @param identifier
+   * @param arguments
+   * @return
+   */
+  public synchronized String invokeMember(String member, Object... arguments) {
+    String result = null;
+    Context context_ = null;
+
+    if (_context != null && _options.get("hotreload") == "false") {
+      _context.close();
+      _context = null;
+      _helper = null;
+      _cache = null;
+    }
+
+    if (_context == null) {
+      _context = executeGraalContextFactory.apply(null);
+      context_ = _context;
+    }
+
+    Iterator<Script> sourcesIterator = _scripts.iterator();
+
+    while (sourcesIterator.hasNext()) {
+      Script script = sourcesIterator.next();
+
+      if ((_cache == null && script.getName().equalsIgnoreCase("cache"))
+          || (_helper == null && script.getName().equalsIgnoreCase("helper"))
+          || (!script.getName().equalsIgnoreCase("cache") && !script.getName().equalsIgnoreCase("helper"))) {
+        try {
+          Source source = script.getSource();
+          Value value = context_.eval(source);
+          if (script.getName().equalsIgnoreCase("cache")) {
+            _cache = source;
+          }
+          if (script.getName().equalsIgnoreCase("helper")) {
+            _helper = source;
+          }
+          if (value.canExecute()) {
+            _members.put(context_.eval(_helper).execute(value).asString(), value); // _djgxcore.getHelpers().get(source.getLanguage())
+          }
+        } catch (Exception e) {
+          // TODO: Auto-generated catch block
+          logger.error("Auto-generated catch block", e);
+          // e.printStackTrace();
+        }
+      }
+    }
+
+    if (_members.get(member) instanceof Value) {
+      result = _members.get(member).execute(arguments).asString();
+    }
+
+    return result;
+  }
+}
